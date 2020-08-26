@@ -1,6 +1,5 @@
 import numpy as np
 from scipy.io.wavfile import write
-
 from PIL import Image
 import soundfile as sf
 import os
@@ -8,14 +7,11 @@ import StegAppFrameSplitter as safp
 import StegAppFrameJoiner as safj
 import time
 import hashlib
-
 import math
 import shutil
 
 
 class ZipToImage3:
-
-
 
     def __init__(self, *args, **kwargs):
         self.self_ref = args[0]
@@ -36,12 +32,15 @@ class ZipToImage3:
          limit_index = self.file_directorty.rindex('\\')
          self.folder_directory = self.file_directorty[:limit_index + 1]
 
+        
     def printDir(self):
         print(self.file_directorty)
 
+        
     def getResolution(self):
         print(self.width, self.height)
 
+        
     def splitFile(self):
         CHUNK_SIZE = 3 * int(self.width) * int(self.height) - 1
 
@@ -50,8 +49,6 @@ class ZipToImage3:
         file_number = 0
         gauge_value = 0
         piece_number = 0
-
-
 
         with open(self.file_directorty, 'rb') as fl:
 
@@ -62,7 +59,6 @@ class ZipToImage3:
             while b:
                 b = fl.read(CHUNK_SIZE)
                 if not b: break
-
 
                 tmp_dir = os.path.join(self.folder_directory, 'output', '')
                 if not os.path.exists(tmp_dir):
@@ -76,10 +72,7 @@ class ZipToImage3:
                 gauge_value += self.increment_percentage
                 piece_number += 1
                 safp.StegAppFrameSplitter.gauge_updater(self.self_ref, gauge_value, piece_number)
-
-
-
-
+                
         return 0
 
 
@@ -101,7 +94,6 @@ class ZipToImage3:
 
         psteg_writer = "#@PySteg"
 
-
         filename = self.file_directorty
         sha256_hash = hashlib.sha256()
         with open(filename, "rb") as f:
@@ -111,12 +103,10 @@ class ZipToImage3:
             print(sha256_hash.hexdigest())
             psteg_writer += '\n' + sha256_hash.hexdigest()
 
-
         increment_amount = 100 / len(fileList)
         piece_number = 0
         gauge_value = 0
         safp.StegAppFrameSplitter.gauge_updater(self.self_ref, gauge_value, -1)
-
 
         binary_file_integers = []
         for i in range(0, len(fileList) - 1):
@@ -146,14 +136,11 @@ class ZipToImage3:
             gauge_value += increment_amount
             safp.StegAppFrameSplitter.gauge_updater(self.self_ref, gauge_value, piece_number)
 
-
             out_filename = fileList[i].rpartition('.')[0]
             img.save(new_path + out_filename + '.zti.png')
 
             psteg_writer += '\n' + out_filename + '.zti.png'
             #print(new_path + 'img ' + str(i) +  '.zti.png')
-
-
 
         try:
             last_file = len(fileList) - 1
@@ -166,7 +153,6 @@ class ZipToImage3:
                     b = fl.read(1)
                     tmp = int.from_bytes(b, byteorder="little", signed=True)
                     list_int.append(tmp)
-
 
             binary_file_integers = np.array(list_int)
             binary_file_integers = np.int8(binary_file_integers)
@@ -186,31 +172,19 @@ class ZipToImage3:
 
             print("ERROR IN LAST FILE SIZE")
 
-
-
         with open(new_path + fileList[0].rpartition('.')[0] + '.psteg', 'w') as data:
             data.write(psteg_writer)
 
-
         gauge_value = 100
         safp.StegAppFrameSplitter.gauge_updater(self.self_ref, gauge_value, -3)
-
 
         print("WORK DONE")
         return 0
 
 
-
-
-
     def assembleFile(self):
 
-
-
-
         path = os.path.join(self.folder_directory, 'generated_images', '')
-
-
 
         # Get all the file names in directory
 
@@ -247,22 +221,16 @@ class ZipToImage3:
             np_im = np_im.ravel()
             np_im = np.int8(np_im)
 
-
-
             #print("AT " +  file)
             for i in range(len(np_im) - 1):
                 list_inv.append(int(np_im[i]).to_bytes(1, byteorder="little", signed=True))
-
 
             gauge_value += increment_amount
             piece_number += 1
             safj.StegAppFrameJoiner.gauge_updater(self.self_ref, gauge_value, piece_number)
 
-
-
         print("half done")
         print(len(list_inv))
-
 
         tmp = fileList[-1].rpartition('.')[0]
         tmp = tmp.rpartition('.')[0]
@@ -271,23 +239,15 @@ class ZipToImage3:
         global img_out_path
         img_out_path = path + tmp
 
-
-
         with open(path + tmp, 'wb') as f:
             f.writelines(list_inv)
 
-
         print("wrote file")
-
 
         with open(path + tmp, "ab") as myfile, open(path + fileList[-1], "rb") as file2:
             myfile.write(file2.read())
 
         print("ALL DONE")
-
-
-
-
 
         gauge_value = 100
         safj.StegAppFrameJoiner.gauge_updater(self.self_ref, gauge_value, -3)
@@ -305,7 +265,6 @@ class ZipToImage3:
             for byte_block in iter(lambda: f.read(4096), b""):
                 sha256_hash.update(byte_block)
             newfile_hash = sha256_hash.hexdigest()
-
 
         print(file_hash_sha256)
         print(newfile_hash)
