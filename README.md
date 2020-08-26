@@ -1,5 +1,5 @@
 # PySteg
-A tool for steganography to store zip or other files into one or more music files with ability encrypt the hidden data.
+A tool for steganography to store zip or other files into one or more image files with ability encrypt the hidden data.
 
 
 <div align="center">
