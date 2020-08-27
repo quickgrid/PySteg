@@ -1,5 +1,7 @@
 # PySteg
-A tool for steganography to store zip or other files into one or more image files with ability encrypt the hidden data.
+A python tool writen in `wxpython` for steganography to `store zip or other files into one or more image files` with ability encrypt the hidden data. It needs to run from python enviroment as there is no released app. 
+
+Easy way to get it running is to get anaconda then create a conda enviorment with `requirements.txt`. It any package is missing it needs to be `pip` or `conda` installed.
 
 
 ![PySteg Demo Gif](PySteg.gif)
